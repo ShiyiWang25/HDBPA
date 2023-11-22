@@ -17,7 +17,7 @@ def HDBPA(args):
         sys.exit(1)
 
     pop_size_1 = reform_aligned_reads(args.SAM1, args.r, args.mode)
-    pop_size_2 = reform_aligned_reads(args.SAM2, args.f, args.mode)  
+    pop_size_2 = reform_aligned_reads(args.SAM2, args.r, args.mode)  
     
     df_phylo = phylogeny_all(args.SAM1.split('.sam')[0] + '_reformed.csv', 
                   args.SAM2.split('.sam')[0] + '_reformed.csv')
