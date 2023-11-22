@@ -4,7 +4,9 @@
 (Last Update: 2023-11-22)
 ### Description
 This _Python_ script is designed to trace the evolution of the HIV population on the single virus level.
-It utilizes Hamming distance to calculate the similarity between sequences detected at different time points and could handle thousands of long reads in seconds.h
+
+It utilizes Hamming distance to calculate the similarity between sequences detected at different time points and could handle thousands of long reads in seconds.
+
 Hamming distance is calculated on the non-synonymous mutation level in the current version. The calculation on the nucleotide level will be added soon.
 
 ### Features
