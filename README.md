@@ -1,6 +1,7 @@
 # Toolkits for Nanopore sequencing data
 
-## HDBPA (Hamming-distance-based phylogenetic analysis) (Last UpdateL 2023-11-22)
+## HDBPA (Hamming-distance-based phylogenetic analysis) 
+(Last Update: 2023-11-22)
 ### Description
 This _Python_ script is designed to trace the evolution of the HIV population on the single virus level.
 It utilizes Hamming distance to calculate the similarity between sequences detected at different time points and could handle thousands of long reads in seconds.h
