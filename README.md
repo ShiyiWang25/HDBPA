@@ -32,6 +32,12 @@ python -m pip install git+https://github.com/ShiyiWang25/HDBPA.git
 ```
 python3 -m HDBPA --SAM1 ./TestData/DN.sam --SAM2 ./TestData/VF01.sam -r ./TestData/hxb2.fa
 ```
-Expected outputs:
+**Expected outputs:**
+<img align="right" src="https://github.com/ShiyiWang25/HDBPA/blob/main/Figures/HDBPA_plot.png" width=50% height=50%>
 
+Two significant subpopulations formed during this treatment. 
+
+They are derived from the MRCAs with mutational patterns A518 and A1594, respectively. 
+
+More details can be found in the CSV file in the Figures folder.
 
