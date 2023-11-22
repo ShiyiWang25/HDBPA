@@ -8,7 +8,6 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib import cm, collections
-from tqdm import tqdm
 
 EOL = '\n'
     
@@ -373,7 +372,7 @@ def phylogeny_all(sample1, sample2, threshold = 0):
     Patterns2 = pattern_abundance_calculator(sample2)['Pattern'].tolist()
     Abundance2 = pattern_abundance_calculator(sample2)['Abundance'].tolist()
 
-    for P2 in tqdm(Patterns2):
+    for P2 in Patterns2:
         distance = len(P2[2:-2].split("', '"))
         for P1 in Patterns1:
             if get_distance(P1[2:-2].split("', '"), P2[2:-2].split("', '"))[0] < distance:
