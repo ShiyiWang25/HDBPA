@@ -30,7 +30,7 @@ python -m pip install git+https://github.com/ShiyiWang25/HDBPA.git
 
 ### Example:
 ```
-python3 -m HDBPA --SAM1 ./materials/DN.sam --SAM2 ./materials/VF01.sam -r ./materials/hxb2.fa
+python3 -m HDBPA --SAM1 ./TestData/DN.sam --SAM2 ./TestData/VF01.sam -r ./TestData/hxb2.fa
 ```
 Expected outputs:
 
