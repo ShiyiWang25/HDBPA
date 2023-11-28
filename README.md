@@ -36,11 +36,22 @@ python -m pip install git+https://github.com/ShiyiWang25/HDBPA.git
 python3 -m HDBPA --SAM1 ./TestData/DN.sam --SAM2 ./TestData/VF01.sam -r ./TestData/hxb2.fa
 ```
 **Expected outputs:**
-<img align="right" src="https://github.com/ShiyiWang25/HDBPA/blob/main/Figures/HDBPA_plot.png" width=50% height=50%>
+<img align="right" src="https://github.com/ShiyiWang25/HDBPA/blob/main/Figures/HDBPA_plot.png" width=20% height=20%>
 
 Two significant subpopulations formed during this treatment. 
 
 They are derived from the MRCAs with mutational patterns A518 and A1594, respectively. 
 
 More details can be found in the CSV file in the Figures folder.
+
+
+
+
+## Next Step: analysis across multiple time points
+The script for analysis across multiple time points will be updated soon. 
+
+Here is an example of viral evolution across various time points and therapies by manually combining evolution between every two timepoints and plotting using a Fish plot.
+
+<img align="center" src="https://github.com/ShiyiWang25/HDBPA/blob/main/Figures/Example.png" width=80% height=80%>
+
 
