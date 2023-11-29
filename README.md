@@ -47,7 +47,7 @@ More details can be found in the CSV file in the Figures folder.
 
 
 
-## Next Step: analysis across multiple time points
+## Further application: analysis across multiple time points
 The script for analysis across multiple time points will be updated soon. 
 
 Here is an example of viral evolution across various time points and therapies by manually combining evolution between every two timepoints and plotting using a Fish plot.
