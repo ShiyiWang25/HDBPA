@@ -44,9 +44,13 @@ def reform_aligned_reads(input_samfile, ref, mode):
     if mode == 'AA':
         output_csv = input_samfile.split('.sam')[0] + '_reformed.csv'
         mutation_tracker_csv(output_fasta, output_csv, ref)
+    else:
+        pass # the NT mode will be added soon
     return len(df_reforemed)
 
 def CCIGAR_data(input_sam_file):
+    # read information from the SAM file and store it in a data frame
+    # each row of the data frame stores the QNAME, POS, MAPQ, CIGAR, and SEQ for each read
     
     QNAME_list, POS_list,MAPQ_list,  CIGAR_list, SEQ_list = [], [], [], [], []
     with open(input_sam_file, 'r') as f:
@@ -72,8 +76,14 @@ def CCIGAR_data(input_sam_file):
     return df
 
 def seqlen_CIGAR(CIGAR):
+    # for each sequencing read aligned
+    # calculate the its length from the first to the last mapped nucleotide
+    # based on the CIGAR string in the SAM file
+    
     seqlen = 0
+    # recognize matched nucleotides
     alignment_match = re.findall(r'(?P<M_count>[\d]+)M', CIGAR)
+    # recognize deletion in the sequencing read 
     ref_del = re.findall(r'(?P<D_count>[\d]+)D', CIGAR)
     
     for item in alignment_match:
@@ -84,6 +94,25 @@ def seqlen_CIGAR(CIGAR):
     return seqlen
 
 def seq_CIGAR(CIGAR, POS, ref_sequence, SEQ_old):
+    '''    
+    Built the query sequence into the reference sequence
+    1) remove insertions in the query sequence
+    2) fill the deletions in the query sequence using the corresponding sequence in the ref
+    Example:
+    ref     AAAAAATTTTAA--AA
+    query   ATTA---TTTAAAATT
+    output  ATTAAATTTTAA--TT
+    
+
+    Args:
+    CIGAR (str): CIGAR string for the query sequence in the SAM file
+    POS (int): start position of the query sequence in the SAM file
+    ref_sequence (str): reference sequence file
+    SEQ_old (str): the sequence of the query sequence in the SAM file
+
+    Returns:
+    seq (str): the query sequence built into the reference sequence
+    '''
 
     # get the reference sequence
     sequences_object = pysam.FastaFile(ref_sequence)
@@ -102,9 +131,6 @@ def seq_CIGAR(CIGAR, POS, ref_sequence, SEQ_old):
     start_pos_seq = 0
     seq = ''
     
-    # built the query sequence into the reference sequence
-    # remove insertions in the query sequence
-    # fill the deletions in the query sequence using the corresponding sequence in the ref
     for i in range(len(df)):
         if df.iloc[i]['y'] == 'M': # alignment match
             seq += SEQ_old[start_pos_seq: start_pos_seq + int(df.iloc[i]['x'])]
@@ -122,6 +148,8 @@ def seq_CIGAR(CIGAR, POS, ref_sequence, SEQ_old):
     return seq
 
 def sequence_in_backbone(df, ref_sequence):  
+    # bulk processing
+    # for each sequencing reads stored in the data frame (df), built it into the reference sequence
     
     # get the reference sequence and its seqID and length
     sequences_object = pysam.FastaFile(ref_sequence)
@@ -162,6 +190,8 @@ def write_file_bulk(df, output_file_path):
                     )
 
 def mutations_identifier(input_file_path, ref):
+    # identify the non-synonymous mutations in each sequence in the input file (input_file_path)
+    # sequences are aligned to a reference sequence (ref)
     # the data should be stored as ReadID-(Mutations)
     
     line_count = 0
@@ -190,6 +220,9 @@ def mutation_tracker_csv(input_file_path, output_file_path, ref):
     df.to_csv(output_file_path)
     
 def codon_lib_generator():
+    # generate the codon library
+    # translate nucleotide sequence into amino acid sequence
+    # using Human codon
     Base1_list = ['T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T',
                   'T', 'T', 'T', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C',
                   'C', 'C', 'C', 'C', 'C', 'C', 'A', 'A', 'A', 'A', 'A', 'A', 'A',
@@ -220,6 +253,8 @@ def codon_lib_generator():
     return codon_lib
     
 def ORF_start_definer_HIV(position):
+    # Find the ORF for each mutation and the start position of that ORF
+    # customized for HIV HXB2 sequence.
     # when p6 overlaps with PR, here not consider p6.
     # assume p6 ends at where PR starts
     
@@ -265,7 +300,7 @@ def ORF_start_definer_HIV(position):
 
 def translator(nuc_seq, ref_sequence):
     # customized for HIV HXB2 sequence.
-    # only capture non-synonymous amino acid mutations here.
+    # Only capture non-synonymous amino acid mutations here.
     
     codon_lib = codon_lib_generator()
     
@@ -349,7 +384,7 @@ def translator(nuc_seq, ref_sequence):
     return aa_mutation_list
     
 def find_different_nuc(codon_ref, codon_seq):
-    
+    # find the different nucleotides between two codons.
     compare_list = []
     
     for i, j in zip(codon_ref, codon_seq):
@@ -357,7 +392,24 @@ def find_different_nuc(codon_ref, codon_seq):
         
     return compare_list
     
-def phylogeny_all(sample1, sample2, threshold = 0):
+def phylogeny_all(sample1, sample2):
+    '''
+    Link each pattern detected at a later time point to
+    its most recent common ancestor (MRCA) seen at a former time point
+
+    Args:
+    sample1 (str): A CSV file stores the mutation information of the 1st sample.
+    sample2 (str): A CSV file stores the mutation information of the 2nd sample.
+
+    Returns:
+    df (data frame): Each row includes the details of one progeny genome to its MRCA.
+        'Parent_strain': MRCA (pattern) ID.
+        'Progeney_strain': progeny (pattern) ID.
+        'Distance': Hamming distance.
+        'Differences': Mutational changes,
+        'Parent_fre': MRCA read count,
+        'Progeny_fre': progeny read count.
+    '''
     
     parent_list = []
     progeny_list = []
@@ -401,10 +453,18 @@ def phylogeny_all(sample1, sample2, threshold = 0):
     return df
     
 def pattern_abundance_calculator(input_file_path):
+    '''
+    Identify all mutational patterns in each viral population.
+    Args:
+    input_file_path (str): the CSV file that stores the mutations in each viral genome in the population
+    Returns:
+    df_pattern (data frame): a data frame that stores patterns and their abundance in the population.
+    '''
     
     df = pd.read_csv(input_file_path)
 
     mutations_list = df['Mutations'].tolist()
+    # crate a lib for mutational pattern: abundance.
     abundance_lib = {}
 
     for item in mutations_list:
@@ -425,6 +485,9 @@ def pattern_abundance_calculator(input_file_path):
     return df_pattern
 
 def get_distance(list_a, list_b):
+    # Get the Hamming distance between two sequences 
+    # Hamming distance calculated based on the non-synonymous mutations in each sequence
+    
     dif_add = list(set(list_a) - set(list_b))
     for i in range(len(dif_add)):
         dif_add[i] = '+ ' + dif_add[i]
@@ -434,6 +497,7 @@ def get_distance(list_a, list_b):
     return len(dif_add + dif_minus), dif_add + dif_minus
     
 def plot(df, output_plot):
+    # plot the top 10 predominant subpopulations
     blues = cm.get_cmap("Blues", 10)
     df['Parent_fre'] = df['Parent_fre']/sum( df['Parent_fre'].tolist())
     df['Progeny_fre'] = df['Progeny_fre']/sum( df['Progeny_fre'].tolist())
@@ -474,6 +538,7 @@ def plot(df, output_plot):
     return
 
 def fc_2(df_phy, pop_size_1, pop_size_2):
+    # Calculate the fold change of the size of each detected subpopulation.
     Parent_strain_list = []
     Afre_list = []
     Pfre_list = []
